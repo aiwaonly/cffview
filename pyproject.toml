@@ -8,7 +8,7 @@ version = "0.5.3"
 description = "A Python CLI tool to view Ansys Fluent .cas.h5/.msh.h5/.dat.h5 files without opening Fluent"
 readme = "README.md"
 requires-python = ">=3.12"
-authors = [{ name = "preamer", email = "1524477126@qq.com" }]
+authors = [{ name = "aiwaonly", email = "1524477126@qq.com" }]
 keywords = ["fluent", "cfd", "ansys", "hdf5", "mesh"]
 license = "BSD-3-Clause"
 classifiers = [
@@ -25,7 +25,7 @@ dependencies = ["h5py>=3.16.0", "pyvista>=0.48.4", "sexpdata>=1.0.2"]
 cffview = "cffview.cli:main"
 
 [project.urls]
-Repository = "https://github.com/preamer/cffview"
+Repository = "https://github.com/aiwaonly/cffview"
 
 [tool.setuptools.packages.find]
 where = ["src"]
