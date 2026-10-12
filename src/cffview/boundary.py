@@ -18,7 +18,18 @@ together with:
 """
 
 from enum import StrEnum
+from typing import Callable, Union
 from dataclasses import dataclass, field, fields
+
+type BoundaryType = Union[
+    Fluid, Solid,
+    VelocityInlet, MassFlowInlet, PressureInlet, PressureFarField, IntakeFan, InletVent,
+    PressureOutlet, MassFlowOutlet, Outflow, ExhaustFan, OutletVent,
+    Wall, Interior, PorousJump, Fan, Radiator,
+    Interface, Overset,
+    Symmetry, Axis, Periodic,
+    NotImplementedBoundary,
+]
 
 
 class _CodeEnum(StrEnum):
@@ -136,17 +147,17 @@ class BoundaryEnums:
 
 
 class BoundaryFactory:
-    _REGISTRY = {}
+    _REGISTRY: dict[str, BoundaryType] = {}
 
     @classmethod
-    def register(cls, type_name: str):
-        def decorator(subclass):
+    def register(cls, type_name: str) -> Callable[[BoundaryType], BoundaryType]:
+        def decorator(subclass: BoundaryType) -> BoundaryType:
             cls._REGISTRY[type_name] = subclass
             return subclass
         return decorator
 
     @classmethod
-    def create(cls, name: str, id_: str, type_: str):
+    def create(cls, name: str, id_: str, type_: str) -> BoundaryType:
         boundary_cls = cls._REGISTRY.get(type_, NotImplementedBoundary)
         return boundary_cls(name, id_)
 
@@ -359,7 +370,7 @@ class ToDictMixin:
         (see :func:`grouped`). ``name`` and ``id_`` stay at the top level; keys not
         tagged are collected under ``other`` (omitted when empty).
         """
-        result: dict = {'name': data['name'], 'id_': data['id_'], 'general': {}}
+        result: dict = {'id_': data['id_'], 'general': {}}
 
         groups: dict[str, list[str]] = {}
         for f in fields(self):
@@ -382,7 +393,7 @@ class ToDictMixin:
         else:
             result.pop('general')
 
-        return result
+        return {data['name']: result}
 
     def to_dict(self, turb_model: str, rad_model: str) -> dict:
         data = self.__dict__.copy()
@@ -617,14 +628,14 @@ class PressureFarField(ToDictMixin):
 
 @dataclass
 @BoundaryFactory.register('intake-fan')
-class IntakeFan:
+class IntakeFan(ToDictMixin):
     name: str
     id_: str
 
 
 @dataclass
 @BoundaryFactory.register('inlet-vent')
-class InletVent:
+class InletVent(ToDictMixin):
     name: str
     id_: str
 
@@ -713,14 +724,14 @@ class Outflow(ToDictMixin):
 
 @dataclass
 @BoundaryFactory.register('exhaust-fan')
-class ExhaustFan:
+class ExhaustFan(ToDictMixin):
     name: str
     id_: str
 
 
 @dataclass
 @BoundaryFactory.register('outlet-vent')
-class OutletVent:
+class OutletVent(ToDictMixin):
     name: str
     id_: str
 
@@ -771,7 +782,7 @@ class Wall(ToDictMixin):
 
 @dataclass
 @BoundaryFactory.register('interior')
-class Interior:
+class Interior(ToDictMixin):
     name: str
     id_: str
     is_not_a_rans_les_interface: str = ''
@@ -779,7 +790,7 @@ class Interior:
 
 @dataclass
 @BoundaryFactory.register('porous-jump')
-class PorousJump:
+class PorousJump(ToDictMixin):
     name: str
     id_: str
     alpha: str = ''
@@ -789,14 +800,14 @@ class PorousJump:
 
 @dataclass
 @BoundaryFactory.register('fan')
-class Fan:
+class Fan(ToDictMixin):
     name: str
     id_: str
 
 
 @dataclass
 @BoundaryFactory.register('radiator')
-class Radiator:
+class Radiator(ToDictMixin):
     name: str
     id_: str
 
@@ -807,7 +818,7 @@ class Radiator:
 
 @dataclass
 @BoundaryFactory.register('interface')
-class Interface:
+class Interface(ToDictMixin):
     name: str
     id_: str
 
@@ -818,7 +829,7 @@ class Interface:
 
 @dataclass
 @BoundaryFactory.register('overset')
-class Overset:
+class Overset(ToDictMixin):
     name: str
     id_: str
 
@@ -829,7 +840,7 @@ class Overset:
 
 @dataclass
 @BoundaryFactory.register('symmetry')
-class Symmetry:
+class Symmetry(ToDictMixin):
     name: str
     id_: str
 
@@ -840,7 +851,7 @@ class Symmetry:
 
 @dataclass
 @BoundaryFactory.register('axis')
-class Axis:
+class Axis(ToDictMixin):
     name: str
     id_: str
 
@@ -851,7 +862,7 @@ class Axis:
 
 @dataclass
 @BoundaryFactory.register('periodic')
-class Periodic:
+class Periodic(ToDictMixin):
     name: str
     id_: str
     p_jump: str = ''
@@ -866,6 +877,6 @@ class Periodic:
 
 
 @dataclass
-class NotImplementedBoundary:
+class NotImplementedBoundary(ToDictMixin):
     name: str
     id_: str

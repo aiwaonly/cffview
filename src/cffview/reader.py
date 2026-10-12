@@ -347,7 +347,7 @@ def _read_boundary(texts: CaseTexts) -> dict[Literal['boundary'], Any]:
     for boundary_info in boundaries:
         id_, type_, name, _ = [_ for _ in boundary_info[1]]
         new_boundary = BoundaryFactory.create(name, id_, type_)
-        b_list: list[dict[str, str | dict[str, str]]] = data.setdefault(type_, [])
+        b_dict: dict[dict[str, dict[str, str]]] = data.setdefault(type_, {})
 
         for property_list in boundary_info[2]:
             property_name = property_list[0].replace('-', '_').replace('?', '').replace('/', '_')
@@ -378,10 +378,8 @@ def _read_boundary(texts: CaseTexts) -> dict[Literal['boundary'], Any]:
                         value = str(property_list[1:])
                 setattr(new_boundary, property_name, value)
 
-        b_list.append(
+        b_dict.update(
             new_boundary.to_dict(_get_turb_model(texts.general), _get_radiation_model(texts.general))
-            if hasattr(new_boundary, 'to_dict')
-            else new_boundary.__dict__
         )
 
     return {'boundary': data}

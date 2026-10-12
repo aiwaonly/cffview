@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `--bd` output is now grouped by boundary name (`{"fluid-air": {...}, "inlet-air": {...}}`)
+
 ## [v0.5.3] - 2026-09-30
 
 ### Added
