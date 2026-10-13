@@ -19,7 +19,7 @@ pip install cffview
 ### 源码
 
 ```bash
-git clone https://github.com/preamer/cffview.git
+git clone https://github.com/aiwaonly/cffview.git
 cd cffview
 pip install .
 ```

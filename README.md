@@ -1,6 +1,6 @@
 [![PyPI](https://img.shields.io/pypi/v/cffview.svg?logo=python&logoColor=white)](https://pypi.org/project/cffview/)
 [![Python versions](https://img.shields.io/pypi/pyversions/cffview.svg?color=orange&logo=python&label=python&logoColor=white)](https://pypi.org/project/cffview)
-[![CI](https://github.com/preamer/cffview/actions/workflows/build_wheels.yml/badge.svg)](https://github.com/preamer/cffview/actions/workflows/build_wheels.yml)
+[![CI](https://github.com/aiwaonly/cffview/actions/workflows/build_wheels.yml/badge.svg)](https://github.com/aiwaonly/cffview/actions/workflows/build_wheels.yml)
 
 [中文](README.zh.md)
 
@@ -25,7 +25,7 @@ pip install cffview
 ### From source
 
 ```bash
-git clone https://github.com/preamer/cffview.git
+git clone https://github.com/aiwaonly/cffview.git
 cd cffview
 pip install .
 ```
