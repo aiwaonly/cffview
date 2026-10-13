@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `-t` / `--tui` to browse the parsed settings in a Textual TUI instead of printing them: the case structure as a tree on the left, the selected entry as 4-space JSON on the right. This adds a `textual` dependency.
+
 ### Changed
 
 - `--bd` output is now grouped by boundary name (`{"fluid-air": {...}, "inlet-air": {...}}`)

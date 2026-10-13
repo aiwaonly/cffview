@@ -40,6 +40,7 @@ def main() -> None:
         (("--extract",), "extract cas.h5 general and boundary string to files"),
         (("--plotmesh",), "show mesh using pyvista"),
         (("--plotdata",), "plot data using pyvista"),
+        (("-t", "--tui",), "show cffview TUI"),
         (("--solver",), "show solver settings"),
         (("--interfaces",), "show mesh interfaces settings"),
         (("--mesh",), "show mesh settings"),
@@ -173,7 +174,13 @@ def main() -> None:
                             for k in keywords
                         )
                     }
-            print_colored_dict(output)
+
+            if getattr(args, 't', False) or getattr(args, 'tui', False):
+                from .tui import CFFViewTUI
+                app = CFFViewTUI(output, args.file_path.split("/")[-1])
+                app.run()
+            else:
+                print_colored_dict(output)
 
             if args.save is not False:
                 import json

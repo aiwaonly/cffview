@@ -5,6 +5,7 @@
 一个用于查看 Ansys Fluent `.cas.h5` / `.msh.h5` / `.dat.h5` 文件的命令行工具，**无需打开 Fluent**。
 
 - 直接从 HDF5 文件中读取求解器设置、材料、边界条件、离散格式等信息。
+- 使用 `--tui` 在终端 UI 中交互式浏览解析出的设置。
 - 使用 [PyVista](https://pyvista.org) 可视化网格或计算结果。
 
 ## 安装
@@ -40,6 +41,7 @@ cffview <文件> [选项]
 | `--extract` | 将原始 Scheme 设置导出到 `general.scm` / `boundary.scm` / `cortex.scm` |
 | `--plotmesh` | 使用 PyVista 交互式显示网格 |
 | `--plotdata` | 使用 PyVista 以交互方式绘制计算结果（可能无法打开数据文件，依赖 `vtkFLUENTCFFReader`） |
+| `-t`, `--tui` | 在终端 UI 中浏览解析出的设置（而非直接打印） |
 | `--solver` | 求解器类型、时间类型、维度、精度、湍流模型、能量方程、辐射模型、重力等 |
 | `--mat [类型 ...]`, `--materials` | 材料属性（按材料类型 `fluid` / `solid` 分组）；参数可匹配材料类型或材料名（如 `--mat fluid`、`--mat air`） |
 | `--bd [类型 ...]`, `--boundary` | 边界条件设置；参数可匹配边界类型（`vi` 对应 `velocity-inlet`，单个词的边界类型用完整词）或边界名（如 `--bd vi wall po`、`--bd shadow`） |
@@ -95,6 +97,28 @@ cffview case.cas.h5 --version
 # 导出原始 Scheme 字符串以便手动查看
 cffview case.cas.h5 --extract
 ```
+
+### TUI
+
+```bash
+cffview case.cas.h5 --tui
+```
+
+解析出的设置会显示在终端 UI 中，而不是直接打印：左侧是算例结构的树，右侧是选中条目的 4 空格缩进 JSON。键名按嵌套层级着色，右侧面板的边框标题会显示当前条目的路径和键数量。
+
+| 按键 | 作用 |
+|---|---|
+| `↑` / `↓` | 在树中上下移动 |
+| `enter` | 选中条目：有子节点时展开 / 折叠，叶子节点则显示在右侧 |
+| `space` | 展开或折叠选中条目 |
+| `shift+←` / `shift+→` | 跳到父节点 / 第一个子节点 |
+| `shift+↑` / `shift+↓` | 上一个 / 下一个同级节点 |
+| `shift+space` | 展开或折叠全部条目 |
+| `pageup` / `pagedown`、`home` / `end` | 滚动当前获得焦点的面板 |
+| `d` | 切换深色 / 浅色主题 |
+| `q` | 退出 |
+
+点击条目即可选中，有子节点时同时展开 / 折叠；两个面板也支持鼠标滚轮滚动。
 
 ### 演示
 

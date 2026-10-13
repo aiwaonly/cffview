@@ -19,7 +19,12 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Environment :: Console",
 ]
-dependencies = ["h5py>=3.16.0", "pyvista>=0.48.4", "sexpdata>=1.0.2"]
+dependencies = [
+    "h5py>=3.16.0",
+    "pyvista>=0.48.4",
+    "sexpdata>=1.0.2",
+    "textual>=8.2.8",
+]
 
 [project.scripts]
 cffview = "cffview.cli:main"

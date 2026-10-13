@@ -11,6 +11,7 @@
 A command-line tool for viewing Ansys Fluent `.cas.h5` / `.msh.h5` / `.dat.h5` files **without opening Fluent**.
 
 - Read solver settings, materials, boundary conditions, discretisation schemes, and more directly from the HDF5 file.
+- Browse the parsed settings in an interactive terminal UI (`--tui`).
 - Visualise mesh or data with [PyVista](https://pyvista.org).
 
 ## Installation
@@ -46,6 +47,7 @@ cffview <file> [options]
 | `--extract` | Dump raw Scheme settings to `general.scm` / `boundary.scm` / `cortex.scm` |
 | `--plotmesh` | Visualise the mesh interactively with PyVista |
 | `--plotdata` | Visualise the data interactively with PyVista (may not work, depending on `vtkFLUENTCFFReader`) |
+| `-t`, `--tui` | Browse the parsed settings in a terminal UI instead of printing them |
 | `--solver` | Solver type, time, dimension, precision, turbulence model, energy, radiation, gravity, ... |
 | `--mat [TYPE ...]`, `--materials` | Material properties grouped by material type (`fluid` / `solid`); filters match a material type or a material name (e.g. `--mat fluid`, `--mat air`) |
 | `--bd [TYPE ...]`, `--boundary` | Boundary condition settings; filters match a boundary type (`vi` for `velocity-inlet`, whole word for single-word types) or a zone name (e.g. `--bd vi wall po`, `--bd shadow`) |
@@ -102,6 +104,28 @@ cffview case.cas.h5 --version
 # Extract raw Scheme strings for manual inspection
 cffview case.cas.h5 --extract
 ```
+
+### TUI
+
+```bash
+cffview case.cas.h5 --tui
+```
+
+The parsed settings are shown in a terminal UI instead of being printed: the case structure as a tree on the left, the selected entry as 4-space JSON on the right. Keys are coloured by nesting level, and the detail panel's border title shows the path and key count of the current entry.
+
+| Key | Action |
+|---|---|
+| `↑` / `↓` | Move in the tree |
+| `enter` | Select the entry: expands / collapses it when it has children, shows it on the right when it is a leaf |
+| `space` | Expand or collapse the selected entry |
+| `shift+←` / `shift+→` | Go to the parent / first child |
+| `shift+↑` / `shift+↓` | Previous / next sibling |
+| `shift+space` | Expand or collapse all entries |
+| `pageup` / `pagedown`, `home` / `end` | Scroll the focused pane |
+| `d` | Toggle the dark / light theme |
+| `q` | Quit |
+
+Clicking an entry selects it, and toggles it as well when it has children; either pane can also be scrolled with the mouse wheel.
 
 ### Demo
 
