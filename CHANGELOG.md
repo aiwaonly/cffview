@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `--bd` filtering no longer raises an error with the boundary output keyed by zone name introduced in v0.6.0.
+
 ## [v0.6.0] - 2026-10-13
 
 ### Added

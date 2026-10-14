@@ -190,22 +190,27 @@ class BoundaryFactory:
     @classmethod
     def filter_boundaries(
         cls,
-        boundaries: dict[str, list[dict]],
+        boundaries: dict[str, dict[str, dict]],
         keywords: list[str],
-    ) -> dict[str, list[dict]]:
+    ) -> dict[str, dict[str, dict]]:
         """Filter boundary output by type name/shorthand or by zone name.
 
+        ``boundaries`` maps a boundary type to ``{zone_name: zone_settings}``.
         A keyword matching the boundary type (full name or :meth:`abbr`
         shorthand) keeps every zone of that type; otherwise only the zones
-        whose ``name`` contains the keyword are kept. Types without any match
-        are dropped.
+        whose name contains the keyword are kept. Types without any match are
+        dropped.
         """
-        filtered: dict[str, list[dict]] = {}
+        filtered: dict[str, dict[str, dict]] = {}
         for type_name, zones in boundaries.items():
             if cls.matches(type_name, keywords, aliases=(cls.abbr(type_name),)):
                 filtered[type_name] = zones
                 continue
-            matched = [zone for zone in zones if cls.matches(zone.get('name', ''), keywords)]
+            matched = {
+                zone_name: zone_settings
+                for zone_name, zone_settings in zones.items()
+                if cls.matches(zone_name, keywords)
+            }
             if matched:
                 filtered[type_name] = matched
         return filtered
@@ -364,11 +369,13 @@ class ToDictMixin:
         return names
 
     def _group_by_category(self, data: dict[str, str]) -> dict:
-        """Split a flat boundary dict into category sub-dicts (momentum / thermal / radiation / ...).
+        """Group a flat boundary dict into category sub-dicts (momentum / thermal / radiation / ...).
 
         The categories come from each dataclass field's ``metadata['group']`` tag
-        (see :func:`grouped`). ``name`` and ``id_`` stay at the top level; keys not
-        tagged are collected under ``other`` (omitted when empty).
+        (see :func:`grouped`). The zone name is promoted to the key of the
+        returned mapping (``{name: {id_, <category>: {...}, general: {...}}}``)
+        so several zones of the same type can be merged into one mapping; keys
+        not tagged are collected under ``general`` (omitted when empty).
         """
         result: dict = {'id_': data['id_'], 'general': {}}
 
