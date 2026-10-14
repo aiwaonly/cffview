@@ -357,7 +357,7 @@ class ToDictMixin:
         else:
             data.pop('d', None)
             data.pop('q_dot', None)
-            data.pop('material', None)
+            data.pop('material', None) if isinstance(self, Wall) else None
 
     def _filter_methods(self) -> list[str]:
         """All ``_filter_*`` methods in class-definition order (base to subclass)."""
@@ -369,37 +369,13 @@ class ToDictMixin:
         return names
 
     def _group_by_category(self, data: dict[str, str]) -> dict:
-        """Group a flat boundary dict into category sub-dicts (momentum / thermal / radiation / ...).
-
-        The categories come from each dataclass field's ``metadata['group']`` tag
-        (see :func:`grouped`). The zone name is promoted to the key of the
-        returned mapping (``{name: {id_, <category>: {...}, general: {...}}}``)
-        so several zones of the same type can be merged into one mapping; keys
-        not tagged are collected under ``general`` (omitted when empty).
-        """
-        result: dict = {'id_': data['id_'], 'general': {}}
-
-        groups: dict[str, list[str]] = {}
+        """Group a flat boundary dict into category sub-dicts (momentum / thermal / radiation / ...)"""
+        result: dict = {'id_': data['id_']}
         for f in fields(self):
-            group = f.metadata.get('group')
-            if group:
-                groups.setdefault(group, []).append(f.name)
-
-        categorized: set[str] = set()
-        for category, keys in groups.items():
-            category_data = {key: data[key] for key in keys if key in data}
-            if category_data:
-                result[category] = category_data
-            categorized.update(keys)
-
-        if other := {
-            key: value for key, value in data.items()
-            if key not in categorized and key not in ('name', 'id_')
-        }:
-            result['general'] = other
-        else:
-            result.pop('general')
-
+            key_name = f.name
+            if key_name in data.keys() and key_name not in ('name', 'id_'):
+                group = f.metadata.get('group')
+                result.setdefault(group if group else 'general', {})[key_name] = data[key_name]
         return {data['name']: result}
 
     def to_dict(self, turb_model: str, rad_model: str) -> dict:
@@ -477,6 +453,7 @@ class Fluid(ToDictMixin):
 class Solid(ToDictMixin):
     name: str
     id_: str
+
     material: str = ''
     sources: str = ''
     source_terms: dict[str, dict[str, str]] = field(default_factory=dict)
