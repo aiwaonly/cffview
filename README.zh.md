@@ -122,7 +122,7 @@ cffview case.cas.h5 --tui
 
 ### 演示
 
-https://github.com/user-attachments/assets/7f97b559-87fa-4822-be9f-4e82b8c5cab6
+[demo.webm](https://github.com/user-attachments/assets/8250a1ba-0dca-46f8-83a2-4fc5ea41bcfb)
 
 ## 开源协议
 
