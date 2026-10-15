@@ -129,7 +129,7 @@ Clicking an entry selects it, and toggles it as well when it has children; eithe
 
 ### Demo
 
-https://github.com/user-attachments/assets/7f97b559-87fa-4822-be9f-4e82b8c5cab6
+[demo.webm](https://github.com/user-attachments/assets/8250a1ba-0dca-46f8-83a2-4fc5ea41bcfb)
 
 ## License
 
