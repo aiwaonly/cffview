@@ -7,7 +7,8 @@ variable switching, opacity and clip-plane widgets.
 
 import sys
 
-from pyvista import read, _vtk, Actor, Plotter, MultiBlock, PolyData, UnstructuredGrid, DataSetMapper
+import pyvista as pv
+from pyvista import _vtk
 
 # PyVista plotter's default keyboard shortcuts
 KEYBOARD_SHORTCUTS = {
@@ -29,12 +30,12 @@ KEYBOARD_SHORTCUTS = {
 
 
 class BasePlotter:
-    def __init__(self, mesh: MultiBlock | PolyData) -> None:
-        self.mesh = mesh.combine() if isinstance(mesh, MultiBlock) else mesh
+    def __init__(self, mesh: pv.MultiBlock | pv.PolyData) -> None:
+        self.mesh = mesh.combine() if isinstance(mesh, pv.MultiBlock) else mesh
         self.dimension = 2 if all(self.mesh.points[:, 2] == 0.0) else 3
 
         # Monkey patch to fix clip plane error
-        if isinstance(self.mesh, UnstructuredGrid):
+        if isinstance(self.mesh, pv.UnstructuredGrid):
             _vtk._CORE_MODULES['vtkFiltersGeneral'] = (
                 *_vtk._CORE_MODULES['vtkFiltersGeneral'], 'vtkClipDataSet'
             )
@@ -47,7 +48,7 @@ class BasePlotter:
             }
             _vtk.vtkTableBasedClipDataSet = _vtk.vtkClipDataSet
 
-        self.pl = Plotter()
+        self.pl = pv.Plotter()
         self.pl.enable_anti_aliasing()
         self.pl.add_camera_orientation_widget().representation.AnchorToLowerRight()
         self.keyboard_shortcuts = KEYBOARD_SHORTCUTS
@@ -140,7 +141,7 @@ class MeshPlotter(BasePlotter):
             font_size=10,
         )
 
-    def _add_mesh(self) -> Actor:
+    def _add_mesh(self) -> pv.Actor:
         mesh_actor = self.pl.add_mesh(
             self.mesh,
             show_edges=True,
@@ -198,7 +199,7 @@ class MeshPlotter(BasePlotter):
 
 
 class DataPlotter(BasePlotter):
-    def __init__(self, mesh: MultiBlock | PolyData) -> None:
+    def __init__(self, mesh: pv.MultiBlock | pv.PolyData) -> None:
         super().__init__(mesh)
         self.var_names = [
             'SV_P',
@@ -265,7 +266,7 @@ class DataPlotter(BasePlotter):
         """Switch the displayed variable without rebuilding any actor."""
         mode = self._scalar_mode(name)
         for actor in (self.mesh_actor, self.mesh_clip_plane_actor):
-            mapper: DataSetMapper = actor.mapper
+            mapper: pv.DataSetMapper = actor.mapper
             mapper.scalar_map_mode = mode
             mapper.set_active_scalars(name, preference=mode)
             mapper.scalar_range = self.scalar_ranges[name]
@@ -347,7 +348,7 @@ def plot_mesh(file_path: str) -> None:
         if renamed:
             os.rename(dat_path, bak_path)
         try:
-            mesh = read(file_path)
+            mesh = pv.read(file_path)
             with File(file_path) as f:
                 root_group: Group = f['/meshes/1']
                 dimension: np.int32 = root_group.attrs['dimension'][0]
@@ -401,7 +402,7 @@ def plot_mesh(file_path: str) -> None:
             offsets = np.cumsum(nnodes) - nnodes
             pv_faces = np.insert(nodes, offsets, nnodes)
 
-        mesh = PolyData(
+        mesh = pv.PolyData(
             pv_points,
             faces=pv_faces if dimension == 3 else None,
             lines=pv_faces if dimension == 2 else None,
@@ -431,6 +432,6 @@ def plot_data(file_path: str) -> None:
         print("Make sure the .dat.h5 file exists alongside the .cas.h5 file.")
         return
 
-    mesh = read(file_path)
+    mesh = pv.read(file_path)
     plotter = DataPlotter(mesh)
     plotter.show(title=file_path)
